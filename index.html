@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Excel Import/Export</title>
+	<style type="text/css">
+		#tblData{width: 800px;margin: 0 auto;}
+		.action{width: 40%;float: left;text-align: center;}
+		table{width: 100%;}
+		table th, table td{border:1px solid #ddd;text-align: left;padding: 2px 5px;}
+	</style>
+</head>
+<body>
+	
+<div id="tblData" style="display: block">
+	<h1>Html to Excel(CSV) Export</h1>
+<table>
+	<tr>
+		<th>Student ID</th>
+		<th>User Name</th>
+		<th>Mobile Number</th>
+		<th>Address</th>
+		<th>Branch</th>
+		<th>Email</th>
+	</tr>
+	<tr>
+		<td>830007</td>
+		<td>nmb</td>
+		<td>88018119512</td>
+		<td>Noakhali</td>
+		<td>Dhaka</td>
+		<td>nmbabor@gmail.com</td>
+	</tr>
+	<tr>
+		<td>830009</td>
+		<td>nmb</td>
+		<td>88018119512</td>
+		<td>Noakhali</td>
+		<td>Dhaka</td>
+		<td>nmbabor@gmail.com</td>
+	</tr>
+	<tr>
+		<td>830022</td>
+		<td>nmb</td>
+		<td>88018119512</td>
+		<td>Noakhali</td>
+		<td>Dhaka</td>
+		<td>nmbabor@gmail.com</td>
+	</tr>
+	<tr>
+		<td>830025</td>
+		<td>nmb</td>
+		<td>88018119512</td>
+		<td>Noakhali</td>
+		<td>Dhaka</td>
+		<td>nmbabor@gmail.com</td>
+	</tr>
+</table>
+<br>
+<button type="button" onclick="exportTableToExcel('tblData', 'Student-Information')" class="btn btn-md btn-success"> <i class="fa fa-download"></i> Download Excel File</button>
+<br>
+<br>
+<a href="import.html">Click heare for Excel to json Convert</a>
+</div>
+
+<script type="text/javascript">
+	function download_csv(csv, filename) {
+            var csvFile;
+            var downloadLink;
+            // CSV FILE
+            csvFile = new Blob([csv], {type: "text/csv"});
+            // Download link
+            downloadLink = document.createElement("a");
+
+            // File name
+            downloadLink.download = filename;
+
+            // We have to create a link to the file
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+
+            // Make sure that the link is not displayed
+            downloadLink.style.display = "none";
+
+            // Add the link to your DOM
+            document.body.appendChild(downloadLink);
+
+            // Lanzamos
+            downloadLink.click();
+        }
+
+        function exportTableToExcel(tableID, filename) {
+
+            var csv = [];
+            var rows = document.querySelectorAll("#"+tableID+" table tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = [], cols = rows[i].querySelectorAll("#"+tableID+" td, th");
+
+                for (var j = 0; j < cols.length; j++)
+                    row.push(cols[j].innerText);
+
+                csv.push(row.join(","));
+            }
+
+            // Download CSV
+            download_csv(csv.join("\n"), filename+'.csv');
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Excel to Json convert</title>
+	<style type="text/css">
+		#tblData{width: 800px;margin: 0 auto;}
+		.action{width: 40%;float: left;text-align: center;}
+		table{width: 100%;}
+		table th, table td{border:1px solid #ddd;text-align: left;padding: 2px 5px;}
+	</style>
+</head>
+<body>
+	
+<div id="tblData" style="display: block">
+	<h1>Excel to Json Convert</h1>
+
+	<div class="col-md-12">
+        <label class=""> Upload Excel File: </label>
+        <input type="file" id="files" class="form-control" name="excel_file">
+    </div>
+    <br>
+
+    <div>
+		<p>Json Data: </p>
+		<textarea id="json-load" style="width: 100%;height: 200px;"></textarea>
+	</div>
+	 <br>
+<table id="jsonToTable">
+	
+</table>
+<a href="index.html">Click heare for HTML to Excel(CSV) Convert</a>
+
+
+</div>
+
+
+<script src="assets/jquery.min.js"></script>
+<script src="assets/xlsx.core.min.js"></script>
+<script type="text/javascript">
+	/*Import*/
+
+        function importExcel(e) {
+            //Get the files from Upload control
+            var files = e.target.files;
+            var type = files[0]['type'];
+            var json = '';
+            if(type!='text/csv'){
+                importXlsx(files[0])
+            }else{
+              csvJSON(files[0])
+            }
+        }
+        /* Import Xlsx file */
+        function importXlsx(file){
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                var data = this.result;
+                var result;
+                var workbook = XLSX.read(data, { type: 'binary' });
+                var sheet_name_list = workbook.SheetNames;
+                sheet_name_list.forEach(function (y) { /* iterate through sheets */
+                    //Convert the cell value to Json
+                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+                    if (roa.length > 0) {
+                        result = roa;
+                    }
+                });
+                var json = JSON.stringify(result);
+                jsonResult(result)
+
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        /*CSV to Json*/
+        function csvJSON(file){
+            oFReader = new FileReader();
+            oFReader.onloadend = function() {
+            var csv = this.result;
+            var lines=csv.split("\n");
+            var result = [];
+
+            var headers=lines[0].split(",");
+
+            for(var i=1;i<lines.length;i++){
+
+                var obj = {};
+                var currentline=lines[i].split(",");
+
+                for(var j=0;j<headers.length;j++){
+                    obj[headers[j]] = currentline[j];
+                }
+
+                result.push(obj);
+            }
+
+            //return result; //JavaScript object
+            var json =  JSON.stringify(result); //JSON
+                jsonResult(result)
+
+            };
+            oFReader.readAsText(file);
+        }
+    function jsonResult(result){
+        $('#jsonToTable').html('')
+        var json = JSON.stringify(result);
+        $('#json-load').val(json)
+        var firstRow = result[0];
+        var tableHead = '<thead><tr class="bg-success">';
+        for (var key in firstRow) {
+            if(key!='__rowNum__'){
+                tableHead+='<th>'+key+'</th>'
+            }
+        }
+        tableHead+='</tr></thead>';
+        $('#jsonToTable').append(tableHead)
+        var html = '<tbody>';
+
+        for (var data of result) {
+            html+='<tr>';
+           for(var key in data){
+               if(key!='__rowNum__'){
+                   html+='<td>'+data[key]+'</td>'
+               }
+           }
+            html+='</tr>';
+        }
+        html += '</tbody>'
+        $('#jsonToTable').append(html)
+
+    }
+/**/
+
+
+        //Change event to dropdownlist
+        $(document).ready(function(){
+            $('#files').change(importExcel);
+        });
+</script>
+</body>
+</html>
